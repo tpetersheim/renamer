@@ -16,6 +16,7 @@
     "no-void-expression": false,
     "no-redundant-jsdoc": false,
     "prefer-type-cast": false,
+    "linebreak-style": false,
     "trailing-comma": [ // https://palantir.github.io/tslint/rules/trailing-comma/
       true,
       {
