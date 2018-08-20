@@ -1,69 +1,46 @@
-import fs from 'fs';
+import fs = require('fs');
 import yargs from 'yargs';
-
-// /**
-//  * Some predefined delays (in milliseconds).
-//  */
-// export enum Delays {
-//   Short = 500,
-//   Medium = 2000,
-//   Long = 5000,
-// }
-
-// /**
-//  * Returns a Promise<string> that resolves after given time.
-//  *
-//  * @param {string} name - A name.
-//  * @param {number=} [delay=Delays.Medium] - Number of milliseconds to delay resolution of the Promise.
-//  * @returns {Promise<string>}
-//  */
-// function delayedHello(name: string, delay: number = Delays.Medium): Promise<string> {
-//   return new Promise(
-//     (resolve: (value?: string) => void) => setTimeout(
-//       () => resolve(`Hello, ${name}`),
-//       delay,
-//     ),
-//   );
-// }
-
-// // Below are examples of using TSLint errors suppression
-// // Here it is suppressing missing type definitions for greeter function
-
-// export async function greeter(name) { // tslint:disable-line typedef
-//   // tslint:disable-next-line no-unsafe-any no-return-await
-//   return await delayedHello(name, Delays.Long);
-// }
+import { Logger } from './Logger';
+// import { nameof } from './nameof';
 
 class Main {
 
-  // constructor()
-  // {
+  private logger: Logger;
 
-  // }
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
 
-  public static Start() {
+  public run() {
     const args = yargs.argv;
-    const fileRenamesJsonArg = args.fileRenames;
-    const folderNameArg = args.folder;
+    const fileRenamesJsonArg = args.fileRenames || '../data/test.json';
+    const folderNameArg = args.folder || '../data/files';
+
+    if (!this.checkArgs(fileRenamesJsonArg, folderNameArg)) {
+      return;
+    }
 
     const fileRenames = fs.readFileSync(fileRenamesJsonArg).toJSON();
-    Logger.Log(JSON.stringify(fileRenames));
+    this.logger.log(JSON.stringify(fileRenames));
 
     const existingFileNames = fs.readdirSync(folderNameArg);
-    Logger.Log(JSON.stringify(existingFileNames));
+    this.logger.log(JSON.stringify(existingFileNames));
 
+  }
+
+  private checkArgs(fileRenamesJsonArg: string, folderNameArg: string): boolean {
+    if (fileRenamesJsonArg == null || !fs.existsSync(fileRenamesJsonArg)) {
+      this.logger.error(`fileRenamesJsonArg value '${fileRenamesJsonArg}' argument does not exist`);
+      return false;
+    }
+
+    if (folderNameArg == null || !fs.existsSync(folderNameArg)) {
+      this.logger.error(`folderNameArg value '${folderNameArg}' argument does not exist`);
+      return false;
+    }
+
+    return true;
   }
 }
 
-Main.Start();
-
-class Logger {
-
-  public static Log(message: string) {
-    console.log(message);
-  }
-
-  public static Error(message: string) {
-    console.error(message);
-  }
-}
+new Main(new Logger()).run();
