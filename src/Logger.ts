@@ -1,9 +1,9 @@
 export class Logger {
-  public log(message: string) {
-    console.log(message);
+  public log(...messages: any[]) {
+    console.log(...messages);
   }
 
-  public error(message: string) {
-    console.error(message);
+  public error(...messages: any[]) {
+    console.error(...messages);
   }
 }
